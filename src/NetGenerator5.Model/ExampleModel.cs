@@ -9,4 +9,12 @@ namespace NetGenerator5.Model
 
         public string Name { get; set; }
     }
+
+    [Model]
+    public class ExampleModel2
+    {
+        public int Id { get; set; }
+
+        public string Name { get; set; }
+    }
 }
