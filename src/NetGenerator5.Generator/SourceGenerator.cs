@@ -12,40 +12,41 @@ namespace NetGenerator5.Generator
     {
         public void Initialize(GeneratorInitializationContext context)
         {
+        }
+
+        public void Execute(GeneratorExecutionContext context)
+        {
             // #if DEBUG
             //             if (!System.Diagnostics.Debugger.IsAttached)
             //             {
             //                 System.Diagnostics.Debugger.Launch();
             //             }
             // #endif
-        }
-
-        public void Execute(GeneratorExecutionContext context)
-        {
-            //#if DEBUG
-            //            if (!System.Diagnostics.Debugger.IsAttached)
-            //            {
-            //                System.Diagnostics.Debugger.Launch();
-            //            }
-            //#endif
 
             if (context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.MSBuildProjectDirectory", out var projectDirectory) == false)
             {
                 throw new ArgumentException("MSBuildProjectDirectory");
+            }    
+            if (context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.SourceGenerator_OutputPath", out var outputPath) == false)
+            {
+                throw new ArgumentException("SourceGenerator_ControllerNamespace");
+            }
+            if (context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.SourceGenerator_ModelNamespace", out var modelNamespace) == false)
+            {
+                throw new ArgumentException("SourceGenerator_ModelNamespace");
+            }            
+            if (context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.SourceGenerator_ControllerNamespace", out var controllerNamespace) == false)
+            {
+                throw new ArgumentException("SourceGenerator_ControllerNamespace");
             }
 
-            var configFile = context.AdditionalFiles.First(e => e.Path.EndsWith("generatorsettings.json")).GetText(context.CancellationToken);
-            var config = Newtonsoft.Json.Linq.JObject.Parse(configFile?.ToString() ?? throw new Exception("No config file"));
-
-            var projectPath = Path.Combine(projectDirectory, config["OutputPath"]?.ToString().Replace("/", "\\") ?? throw new Exception("No OutputPath set"));
-            var modelNamespaceName = config["ModelNamespace"]?.ToString() ?? throw  new Exception("No ModelNamespace set");
-            var controllerNamespaceName = config["ControllerNamespace"]?.ToString() ?? throw new Exception("No ControllerNamespace set");
-
-            var modelTypes = FindTypes(context, modelNamespaceName, "ModelAttribute");
+            var projectPath = Path.Combine(projectDirectory, outputPath.Replace("/", "\\") ?? throw new Exception("No OutputPath set"));
+            
+            var modelTypes = FindTypes(context, modelNamespace, "ModelAttribute");
             if (modelTypes.Length == 0)
                 return;
 
-            var controllerTypes = FindTypes(context, controllerNamespaceName, "ApiControllerAttribute");
+            var controllerTypes = FindTypes(context, controllerNamespace, "ApiControllerAttribute");
             if (controllerTypes.Length == 0)
                 return;
 

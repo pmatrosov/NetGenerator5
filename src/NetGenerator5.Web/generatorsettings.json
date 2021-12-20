@@ -1,5 +1,0 @@
-{
-  "OutputPath": "wwwroot/js",
-  "ModelNamespace": "NetGenerator5.Model",
-  "ControllerNamespace": "NetGenerator5.Web.Controllers"
-}
